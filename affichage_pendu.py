@@ -92,6 +92,6 @@ def affichage(num: int, num_max: int) -> str:
         sys.exit(0)
 
     _ = os.system('clear')
-    print("JEU DU PENDU - V1.1")
+    print("JEU DU PENDU - V2.1")
     print("")
     print(hangman_pics[10 - num_max + num])

@@ -4,6 +4,7 @@ import time
 import os
 import affichage_pendu
 import random
+import score
 
 def init() -> list:
     liste_de_mots = init_liste_de_mots()
@@ -57,7 +58,7 @@ def init_nouvelle_partie(liste_de_mots_faciles, liste_de_mots_moyens, liste_de_m
         nb_erreur_max = 7
         liste_de_mots = liste_de_mots_faciles
         
-    mot = liste_de_mots[random.randint(0, len(liste_de_mots))]
+    mot = liste_de_mots[random.randint(0, len(liste_de_mots) - 1)]
     mot_a_trouver = []
 
     for lettre in mot:
@@ -68,8 +69,13 @@ def init_nouvelle_partie(liste_de_mots_faciles, liste_de_mots_moyens, liste_de_m
                    ["ê","e"],
                    ["ë","e"],
                    ["à","a"],
+                   ["â","a"],
+                   ["ô","a"],
+                   ["ö","a"],
                    ["ï","i"],
                    ["î","i"],
+                   ["û","u"],
+                   ["ü","u"],
                    ["ù","u"]]:
         mot_a_trouver = list(map(lambda lettre_a_touver: {"mystere": lettre_a_touver["mystere"], "MSA": lettre[1], "valeur": "_"}
             if lettre_a_touver["mystere"] == lettre[0] else
@@ -89,7 +95,7 @@ def nouveau_tour_de_jeu(nb_erreur: int, nb_erreur_max: int, mot_a_trouver: dict,
     print("mot mystère :", affichage_mot_a_trouver)
     print("")
     print(message)
-    print(f"nombre d'erreur : {nb_erreur} sur {nb_erreur_max}")
+    print(f"nombre d'erreur : {nb_erreur} sur {nb_erreur_max} admises")
 
 
 def afficher_le_mot(mot_a_trouver) -> str:
@@ -106,12 +112,18 @@ def test_victoire(mot_a_trouver) -> bool:
     return True
 
 
-def fin_jeu(nb_erreur, nb_erreur_max, mot_a_trouver, message, liste_de_mots_faciles, liste_de_mots_moyens, liste_de_mots_difficiles, start):
+def fin_jeu(nb_erreur, nb_erreur_max, mot_a_trouver, message, liste_de_mots_faciles, liste_de_mots_moyens, liste_de_mots_difficiles, start, nom):
     nouveau_tour_de_jeu(nb_erreur, nb_erreur_max, mot_a_trouver, "")
     print("")
     print(message)
     print("Le mot recherché était :", afficher_le_mot(mot_a_trouver))
-    print("temps de jeu :", round(time.time() - start, 2))
+    print("temps de jeu :", round(time.time() - start, 2), "s")
     print("")
+    print("Nom du joueur :", nom)
+    print("")
+    
     action = input("\"Entrée\" pour continuer ")
+
+    # score.ecrire_score(nom,nb_parties_gagnees, nb_parties_jouees)
+
     return init_nouvelle_partie(liste_de_mots_faciles, liste_de_mots_moyens, liste_de_mots_difficiles)
