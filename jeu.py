@@ -1,5 +1,6 @@
 
 
+import time
 import os
 import affichage_pendu
 import random
@@ -7,7 +8,7 @@ import random
 def init() -> list:
     liste_de_mots = init_liste_de_mots()
     
-    affichage_pendu.affichage(6)
+    affichage_pendu.affichage(11,11)
     print("")
     print("Bienvenu dans le \"jeu du pendu\" !")
     print("")
@@ -26,27 +27,59 @@ lettre par lettre, en un nombre limité d'essais.
 
 
 def init_liste_de_mots() -> list:
-    liste_de_mots = []
+    liste_de_mots_faciles = []
+    liste_de_mots_moyens = []
+    liste_de_mots_difficiles = []
 
-    with open("liste_de_mots.txt") as liste_de_mots_txt:
+    with open("liste_de_mots_faciles.txt") as liste_de_mots_txt:
         for mot in liste_de_mots_txt:
-            liste_de_mots.append(mot.replace("\n", ""))
+            liste_de_mots_faciles.append(mot.replace("\n", ""))
+    with open("liste_de_mots_moyens.txt") as liste_de_mots_txt:
+        for mot in liste_de_mots_txt:
+            liste_de_mots_moyens.append(mot.replace("\n", ""))
+    with open("liste_de_mots_difficiles.txt") as liste_de_mots_txt:
+        for mot in liste_de_mots_txt:
+            liste_de_mots_difficiles.append(mot.replace("\n", ""))
     
-    return liste_de_mots
+    return (liste_de_mots_faciles, liste_de_mots_moyens, liste_de_mots_difficiles)
 
 
-def init_nouvelle_partie(liste_de_mots: list):
+def init_nouvelle_partie(liste_de_mots_faciles, liste_de_mots_moyens, liste_de_mots_difficiles):
+    print("")
+    difficulte = input("difficulté [1 = facile (défaut) / 2 = moyen / 3 = difficile] : ")
+    if difficulte == '2':
+        nb_erreur_max = 8
+        liste_de_mots = liste_de_mots_moyens
+    elif difficulte == '3':
+        nb_erreur_max = 10
+        liste_de_mots = liste_de_mots_difficiles
+    else:
+        nb_erreur_max = 7
+        liste_de_mots = liste_de_mots_faciles
+        
     mot = liste_de_mots[random.randint(0, len(liste_de_mots))]
     mot_a_trouver = []
 
     for lettre in mot:
-        mot_a_trouver.append({"mystere": lettre, "valeur": "_"})
+        mot_a_trouver.append({"mystere": lettre.lower(), "MSA": lettre.lower(), "valeur": "_"}) # MAS Mystere Sans Accent
 
-    return (0, 0, mot_a_trouver)
+    for lettre in [["é","e"],
+                   ["è","e"],
+                   ["ê","e"],
+                   ["ë","e"],
+                   ["à","a"],
+                   ["ï","i"],
+                   ["î","i"],
+                   ["ù","u"]]:
+        mot_a_trouver = list(map(lambda lettre_a_touver: {"mystere": lettre_a_touver["mystere"], "MSA": lettre[1], "valeur": "_"}
+            if lettre_a_touver["mystere"] == lettre[0] else
+            {"mystere": lettre_a_touver["mystere"], "MSA": lettre_a_touver["MSA"], "valeur": "_"}, mot_a_trouver))
+
+    return (0, time.time(), nb_erreur_max, mot_a_trouver)
 
 
-def nouveau_tour_de_jeu(nb_erreur: int, mot_a_trouver: dict, message: str):
-    affichage_pendu.affichage(nb_erreur)
+def nouveau_tour_de_jeu(nb_erreur: int, nb_erreur_max: int, mot_a_trouver: dict, message: str):
+    affichage_pendu.affichage(nb_erreur, nb_erreur_max)
     affichage_mot_a_trouver = ""
 
     for lettre in mot_a_trouver:
@@ -56,7 +89,7 @@ def nouveau_tour_de_jeu(nb_erreur: int, mot_a_trouver: dict, message: str):
     print("mot mystère :", affichage_mot_a_trouver)
     print("")
     print(message)
-    print(f"nombre d'erreur : {nb_erreur}")
+    print(f"nombre d'erreur : {nb_erreur} sur {nb_erreur_max}")
 
 
 def afficher_le_mot(mot_a_trouver) -> str:
@@ -73,11 +106,12 @@ def test_victoire(mot_a_trouver) -> bool:
     return True
 
 
-def fin_jeu(nb_erreur, mot_a_trouver, message, liste_de_mots):
-    nouveau_tour_de_jeu(nb_erreur, mot_a_trouver, "")
+def fin_jeu(nb_erreur, nb_erreur_max, mot_a_trouver, message, liste_de_mots_faciles, liste_de_mots_moyens, liste_de_mots_difficiles, start):
+    nouveau_tour_de_jeu(nb_erreur, nb_erreur_max, mot_a_trouver, "")
     print("")
     print(message)
     print("Le mot recherché était :", afficher_le_mot(mot_a_trouver))
+    print("temps de jeu :", round(time.time() - start, 2))
     print("")
     action = input("\"Entrée\" pour continuer ")
-    return init_nouvelle_partie(liste_de_mots)
+    return init_nouvelle_partie(liste_de_mots_faciles, liste_de_mots_moyens, liste_de_mots_difficiles)
