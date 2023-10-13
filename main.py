@@ -15,14 +15,12 @@ while action.lower() != "quit":
         mot_a_trouver, erreur, message = test_caractere.test_caractere(mot_a_trouver, action)
         if erreur == True:
             nb_erreur += 1
+        else:
+            if jeu.test_victoire(mot_a_trouver):
+                nb_erreur, start, mot_a_trouver = jeu.fin_jeu(nb_erreur, mot_a_trouver, "VICTOIRE", liste_de_mots)
     
     if nb_erreur > 6:
-        print("PERDU : FIN DU JEU")
-        print("Le mot rechercher était :", jeu.afficher_le_mot(mot_a_trouver))
-        nb_erreur, start, mot_a_trouver = jeu.init_nouvelle_partie(liste_de_mots)
-        action = input("\"Entrée\" pour continuer ")
-        jeu.nouveau_tour_de_jeu(nb_erreur, mot_a_trouver, message)
-    else:
-        jeu.nouveau_tour_de_jeu(nb_erreur, mot_a_trouver, message)
+        nb_erreur, start, mot_a_trouver = jeu.fin_jeu(nb_erreur - 1, mot_a_trouver, "PERDU : FIN DU JEU", liste_de_mots)
     
+    jeu.nouveau_tour_de_jeu(nb_erreur, mot_a_trouver, message)
     action = input("Entrée une lettre (\"quit\" pour sortir du jeu) ")

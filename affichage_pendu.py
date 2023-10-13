@@ -64,6 +64,6 @@ def affichage(num: int) -> str:
         sys.exit(0)
 
     _ = os.system('clear')
-    print("JEU DU PENDU")
+    print("JEU DU PENDU - V1.1")
     print("")
     print(hangman_pics[num])

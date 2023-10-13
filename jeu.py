@@ -64,3 +64,20 @@ def afficher_le_mot(mot_a_trouver) -> str:
     for lettre in mot_a_trouver:
         mot += lettre["mystere"]
     return mot
+
+
+def test_victoire(mot_a_trouver) -> bool:
+    for lettre in mot_a_trouver:
+        if lettre["valeur"] == "_":
+            return False
+    return True
+
+
+def fin_jeu(nb_erreur, mot_a_trouver, message, liste_de_mots):
+    nouveau_tour_de_jeu(nb_erreur, mot_a_trouver, "")
+    print("")
+    print(message)
+    print("Le mot recherché était :", afficher_le_mot(mot_a_trouver))
+    print("")
+    action = input("\"Entrée\" pour continuer ")
+    return init_nouvelle_partie(liste_de_mots)
